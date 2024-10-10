@@ -14,6 +14,8 @@ typedef struct {
 
 Time* readTimeFromMemory();
 int displayTime(const Time* time);
+int readButtons();
+void flashDigit(int currIndex);
 
 
 #endif /* HARDWARE_H_ */

@@ -34,3 +34,13 @@ int displayTime(const Time* time) {
 
 	return 0;
 }
+
+int readButtons() {
+	// Will read hardware push buttons states
+	printf("readButtons()\n");
+	return 0;
+}
+
+void flashDigit(int currIndex) {
+	printf("flashDigit(int currIndex) -> Current digit flashing: %d\n", currIndex);
+}
