@@ -39,6 +39,9 @@ int displayTime(const Time* time) {
 	return 0;
 }
 
+/**
+ * This function will read inputs from the push buttons
+ */
 int readButtons() {
 	// Will read hardware push buttons states
 	printf("readButtons()\n");
@@ -47,11 +50,19 @@ int readButtons() {
 	return 0;
 }
 
+/**
+ * This function will create a flashing effect of the 7-segment display
+ * at the current index.
+ */
 void flashDigit(int currIndex) {
 	// Implement logic to make digit at current index flash
 	printf("flashDigit(int currIndex) -> Current digit flashing: %d\n", currIndex);
 }
 
+
+/**
+ * This function will save current time into memory.
+ */
 int saveChanges(const Time* time) {
 	// Implement saving time to memory
 	printf("saveChanges(const Time* time) -> Saving changes...\n");
@@ -60,12 +71,19 @@ int saveChanges(const Time* time) {
 	return 0;
 }
 
+/**
+ * This function will increment the value at the current
+ * display, making sure that bounds are taken into account.
+ */
 int increment7Seg(Time* time, int currIndex) {
 
 	// Return some status code
 	return 0;
 }
 
+/**
+ * This function will write to a single 7-segment display.
+ */
 int writeTo7Seg(Time* time, int currIndex, int value) {
 	// Implement some logic to write to 7 segment display
 	time->sevenSeg[currIndex] = value;
@@ -74,6 +92,11 @@ int writeTo7Seg(Time* time, int currIndex, int value) {
 	return 0;
 }
 
+
+/**
+ * This function will read the value at a specified 7-segment
+ * display and return a decimal representation of the value.
+ */
 int readFrom7Seg(const Time* time, int currIndex) {
 	// Return decimal value of the current 7 segment display
 	return time->sevenSeg[currIndex];

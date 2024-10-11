@@ -32,6 +32,10 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
+/**
+ * This function will serve as a "Change Time" mode in which
+ * a user can modify and save changes to the clock.
+ */
 int changeTimeMode(Time* time) {
 	printf("You are in changeTimeMode(Time* time)\n");
 	int currIndex = 0; // Initialize index for displays
