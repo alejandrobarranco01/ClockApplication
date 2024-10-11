@@ -57,6 +57,8 @@ int changeTimeMode(Time* time) {
 			break;
 		case 2:
 			printf("Increment value\n");
+			increment7Seg(time, currIndex);
+			displayTime(time); // Show new time (for now)
 			break;
 		case 1:
 			printf("Decrement value\n");
