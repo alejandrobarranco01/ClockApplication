@@ -16,6 +16,10 @@ Time* readTimeFromMemory();
 int displayTime(const Time* time);
 int readButtons();
 void flashDigit(int currIndex);
+int saveChanges(const Time* time);
+int increment7Seg(Time* time, int currIndex);
+int writeTo7Seg(Time* time, int currIndex, int value);
+int readFrom7Seg(const Time* time, int currIndex);
 
 
 #endif /* HARDWARE_H_ */

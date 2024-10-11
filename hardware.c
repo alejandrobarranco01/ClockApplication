@@ -17,12 +17,14 @@
 Time* readTimeFromMemory() {
 	Time* time = (Time*)malloc(sizeof(Time));
 	if (time != NULL) {
-		time->sevenSeg[0] = 1; // First hour digit
-		time->sevenSeg[1] = 2; // Second hour digit
-		time->sevenSeg[2] = 0; // First minute digit
-		time->sevenSeg[3] = 0; // Second minute digit
+		writeTo7Seg(time, 0, 1); // First hour digit
+		writeTo7Seg(time, 1, 2); // Second hour digit
+		writeTo7Seg(time, 2, 0); // First minute digit
+		writeTo7Seg(time, 3, 0); // Second minute digit
 	}
-	return time; // Return pointer to Time
+
+	// Return pointer to Time
+	return time;
 }
 
 /**
@@ -30,17 +32,49 @@ Time* readTimeFromMemory() {
  */
 int displayTime(const Time* time) {
 	printf("displayTime(const Time* time) -> %d%d:%d%d\n",
-			time->sevenSeg[0], time->sevenSeg[1], time->sevenSeg[2], time->sevenSeg[3]);
+			readFrom7Seg(time, 0), readFrom7Seg(time, 1),
+			readFrom7Seg(time, 2), readFrom7Seg(time, 3));
 
+	// Return some status code
 	return 0;
 }
 
 int readButtons() {
 	// Will read hardware push buttons states
 	printf("readButtons()\n");
+
+	// Return some status code
 	return 0;
 }
 
 void flashDigit(int currIndex) {
+	// Implement logic to make digit at current index flash
 	printf("flashDigit(int currIndex) -> Current digit flashing: %d\n", currIndex);
+}
+
+int saveChanges(const Time* time) {
+	// Implement saving time to memory
+	printf("saveChanges(const Time* time) -> Saving changes...\n");
+
+	// Return some status code
+	return 0;
+}
+
+int increment7Seg(Time* time, int currIndex) {
+
+	// Return some status code
+	return 0;
+}
+
+int writeTo7Seg(Time* time, int currIndex, int value) {
+	// Implement some logic to write to 7 segment display
+	time->sevenSeg[currIndex] = value;
+
+	// Return some status code
+	return 0;
+}
+
+int readFrom7Seg(const Time* time, int currIndex) {
+	// Return decimal value of the current 7 segment display
+	return time->sevenSeg[currIndex];
 }
