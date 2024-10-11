@@ -83,7 +83,7 @@ int increment7Seg(Time* time, int currIndex) {
 	case 0:
 		// If the second display is equal to 9
 		// keep the first display between 0 and 2
-		// and set the second display equal to 0 **
+		// and set the second display equal to 0
 		if (readFrom7Seg(time, 1) == 9) {
 			temp = (temp + 1) % 3;
 			writeTo7Seg(time, 1, 0);
@@ -99,7 +99,7 @@ int increment7Seg(Time* time, int currIndex) {
 	case 1:
 		// If the first display is greater than 1 AND
 		// the second display is currently 3, set current display (first)
-		// and the first display equal to 0 (clock reset) **
+		// and the first display equal to 0 (clock reset)
 		if (readFrom7Seg(time, 0) > 1 && temp == 3) {
 			temp = 0;
 			writeTo7Seg(time, 0, 0);
@@ -111,7 +111,7 @@ int increment7Seg(Time* time, int currIndex) {
 		else {
 			temp = (temp + 1) % 11;
 			// But if it's equal to 10, set the current display
-			// equal to 0 and call increment7Seg() on the previous display **
+			// equal to 0 and call increment7Seg() on the previous display
 			if (temp == 10) {
 				temp = 0;
 				increment7Seg(time, currIndex - 1);
@@ -125,7 +125,7 @@ int increment7Seg(Time* time, int currIndex) {
 		temp = (temp + 1) % 7;
 
 		// But if it's equal to 6, set the current display
-		// equal to 0 and call increment7Seg() on the previous display **
+		// equal to 0 and call increment7Seg() on the previous display
 		if (temp == 6) {
 			temp = 0;
 			increment7Seg(time, currIndex - 1);
@@ -138,7 +138,7 @@ int increment7Seg(Time* time, int currIndex) {
 		temp = (temp + 1) % 11;
 
 		// But if it's equal to 6, set the current display
-		// equal to 0 and call increment7Seg() on the previous display **
+		// equal to 0 and call increment7Seg() on the previous display
 		if (temp == 10) {
 			temp = 0;
 			increment7Seg(time, currIndex - 1);
