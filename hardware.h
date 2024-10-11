@@ -20,6 +20,7 @@ int saveChanges(const Time* time);
 int increment7Seg(Time* time, int currIndex);
 int writeTo7Seg(Time* time, int currIndex, int value);
 int readFrom7Seg(const Time* time, int currIndex);
+int decrement7Seg(Time* time, int currIndex);
 
 
 #endif /* HARDWARE_H_ */

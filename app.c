@@ -62,6 +62,8 @@ int changeTimeMode(Time* time) {
 			break;
 		case 1:
 			printf("Decrement value\n");
+			decrement7Seg(time, currIndex);
+			displayTime(time); // Show new time (for now)
 			break;
 		default:
 			printf("Incorrect input\n");

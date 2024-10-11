@@ -76,7 +76,9 @@ int saveChanges(const Time* time) {
  * display, making sure that bounds are taken into account.
  */
 int increment7Seg(Time* time, int currIndex) {
+	// Save value of current index into a temp value
 	int temp = readFrom7Seg(time, currIndex);
+
 	switch(currIndex) {
 
 	// HEX5 / 7Seg[0]
@@ -93,9 +95,9 @@ int increment7Seg(Time* time, int currIndex) {
 		else if (readFrom7Seg(time, 1) > 4) temp = (temp + 1) % 2;
 		// Otherwise keep it between 0 and 2
 		else temp = (temp + 1) % 3;
-	break;
+		break;
 
-	// HEX4 / 7Seg[1]
+		// HEX4 / 7Seg[1]
 	case 1:
 		// If the first display is greater than 1 AND
 		// the second display is currently 3, set current display (first)
@@ -117,9 +119,9 @@ int increment7Seg(Time* time, int currIndex) {
 				increment7Seg(time, currIndex - 1);
 			}
 		}
-	break;
+		break;
 
-	// HEX3 / 7Seg[2]
+		// HEX3 / 7Seg[2]
 	case 2:
 		// Keep the display between 0 and 6
 		temp = (temp + 1) % 7;
@@ -130,9 +132,9 @@ int increment7Seg(Time* time, int currIndex) {
 			temp = 0;
 			increment7Seg(time, currIndex - 1);
 		}
-	break;
+		break;
 
-	// HEX4 / 7Seg[3]
+		// HEX4 / 7Seg[3]
 	case 3:
 		// Keep the display between 0 and 10
 		temp = (temp + 1) % 11;
@@ -171,4 +173,80 @@ int writeTo7Seg(Time* time, int currIndex, int value) {
 int readFrom7Seg(const Time* time, int currIndex) {
 	// Return decimal value of the current 7 segment display
 	return time->sevenSeg[currIndex];
+}
+
+int decrement7Seg(Time* time, int currIndex) {
+	// Save value of current index into a temp value
+	int temp = readFrom7Seg(time, currIndex);
+
+
+	switch(currIndex) {
+
+		// HEX5 / 7Seg[0]
+	case 0:
+		// If the first display is at 0, add three to
+		// keep it in bounds, and if the second display
+		// is greater than 4, set the second display equal
+		// to zero
+		if (temp == 0) {
+			int secondSeg = readFrom7Seg(time, 1);
+			temp += 3;
+
+			if (secondSeg > 4) writeTo7Seg(time, 1, 0);
+		}
+		break;
+
+		// HEX4 / 7Seg[1]
+	case 1:
+		// If the second display is at 0 and the first display
+		// is greater than one, add four to the current display to
+		// keep it in bounds, otherwise add ten
+		if (temp == 0) {
+			int firstSeg = readFrom7Seg(time, 0);
+
+			if (firstSeg > 0) {
+				temp += 10;
+				decrement7Seg(time, 0);
+			} else if (firstSeg == 0) {
+				temp += 10;
+			}
+		}
+		break;
+
+		// HEX3 / 7Seg[2]
+	case 2:
+		// If the third display is at 0, add six to keep
+		// it in bounds when we decrement it
+		if (temp == 0) {
+			int firstSeg = readFrom7Seg(time, 0);
+			int secondSeg = readFrom7Seg(time, 1);
+			temp += 6;
+			if (secondSeg > 0) decrement7Seg(time, 1);
+			else if (secondSeg == 0 && firstSeg == 0) {
+				writeTo7Seg(time, 0, 2);
+				writeTo7Seg(time, 1, 3);
+			} else {
+				decrement7Seg(time, 0);
+				writeTo7Seg(time, 1, 9);
+			}
+		}
+		break;
+
+		// HEX2 / 7Seg[3]
+	case 3:
+		// If the fourth display is at 0, add ten to keep
+		// it in bounds when we decrement it
+		if (temp == 0) {
+			temp += 10;
+			decrement7Seg(time, 2);
+		}
+		break;
+
+	};
+
+	// Write the new value to the display after decrementing it
+	writeTo7Seg(time, currIndex, --temp);
+
+	// Return some status code
+	return 0;
 }
