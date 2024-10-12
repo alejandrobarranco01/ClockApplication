@@ -206,19 +206,14 @@ int decrement7Seg(Time* time, int currIndex) {
 
 		// HEX4 / 7Seg[1]
 	case 1:
-		// If the second display is at 0 and the first display
-		// is greater than zero, add ten to the current display to
-		// keep it in bounds and decrement the previous display
-		// Otherwise if the first display is at 0, decrement
-		// the first display and add four to the current display
+		// If the second display is at 0 decrement the previous display
+		// and the first display is greater than zero, add ten to the
+		// current display to keep it in bounds Otherwise if the first
+		// display is at 0, and add four to the current display
 		if (temp == 0) {
-			if (firstSeg > 0) {
-				temp += 10;
-				decrement7Seg(time, currIndex - 1);
-			} else if (firstSeg == 0) {
-				decrement7Seg(time, 0);
-				temp += 4;
-			}
+			decrement7Seg(time, currIndex - 1);
+			if (firstSeg > 0) temp += 10;
+			else if (firstSeg == 0) temp += 4;
 		}
 
 		break;
