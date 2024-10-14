@@ -27,8 +27,7 @@ int main(int argc, char **argv) {
 		if (input == 4) changeTimeMode(savedTime); // 4 = KEY0
 	}
 
-	free(savedTime); // Free up the dynamically allocated memory for savedTime
-
+	free(savedTime);
 	return 0;
 }
 

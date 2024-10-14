@@ -18,7 +18,7 @@ Time* readTimeFromMemory() {
 	Time* time = (Time*)malloc(sizeof(Time));
 	if (time != NULL) {
 		writeTo7Seg(time, 0, 1); // First hour digit
-		writeTo7Seg(time, 1, 5); // Second hour digit
+		writeTo7Seg(time, 1, 2); // Second hour digit
 		writeTo7Seg(time, 2, 0); // First minute digit
 		writeTo7Seg(time, 3, 0); // Second minute digit
 	}
