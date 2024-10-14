@@ -6,6 +6,15 @@ This is my Clock Application projectfor SWE-350. This project will run on the DE
 
 Alejandro Barranco-Leyte
 
+Demo Video
+Check out the video demo of the project here.
+
+## Video Link 
+[Video Link](https://www.loom.com/share/57263018caab42e59f762b0cc7141916?sid=0ff8d55b-cdfc-4de3-80d9-6b6d012d1862)
+
+## GitHub Link
+[Github Link](https://github.com/alejandrobarranco01/ClockApplication)
+
 ## Project Description
 
 The application simulates a simple clock with military time format, displayed on four seven-segment displays (HEX2 through HEX5). Users can view and modify the time using the board's buttons. The FPGA will be used to control the displays via a BCD decoder.
