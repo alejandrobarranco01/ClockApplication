@@ -1,6 +1,6 @@
 # Clock Application
 
-This is my Clock Application projectfor SWE-350. This project will run on the DE10-Standard development board. The application is implemented in C and will utilize the ARM HPS and FPGA on the board to create a simple clock application.
+This is my Clock Application project for SWE-350. This project will run on the DE10-Standard development board. The application is implemented in C and will utilize the ARM HPS and FPGA on the board to create a simple clock application.
 
 ## Author
 
@@ -9,15 +9,17 @@ Alejandro Barranco-Leyte
 Demo Video
 Check out the video demo of the project here.
 
-## Video Link 
+## Video Link
+
 [Video Link](https://www.loom.com/share/57263018caab42e59f762b0cc7141916?sid=0ff8d55b-cdfc-4de3-80d9-6b6d012d1862)
 
 ## GitHub Link
+
 [Github Link](https://github.com/alejandrobarranco01/ClockApplication)
 
 ## Project Description
 
-The application simulates a simple clock with military time format, displayed on four seven-segment displays (HEX2 through HEX5). Users can view and modify the time using the board's buttons. The FPGA will be used to control the displays via a BCD decoder.
+The application simulates a simple clock using military time format, displayed on four seven-segment displays (HEX2 through HEX5). Users can view and modify the time, including hours, minutes, and seconds, using the board's switches and buttons. The FPGA manages the seven-segment displays via a BCD decoder.
 
 ### Features
 
@@ -27,8 +29,10 @@ The application simulates a simple clock with military time format, displayed on
   - **KEY1**: Move on to the next digit in time change mode.
   - **KEY2**: Increment the current digit in time change mode.
   - **KEY3**: Decrement the current digit in time change mode.
+- **SW9** turns the clock on and off.
+- **SW0** resets the seconds while in time change mode.
 - Flashes the current digit being modified for user clarity.
-- Initial default time displayed is `12:00`.
+- The clock reads and saves the current time to a text file for persistence between sessions.
 
 ## Code Structure
 
@@ -52,11 +56,12 @@ The project is compiled using a Makefile optimized for the DE10-Standard develop
    ```bash
    make
    ```
+
 3. The executable ClockApplication will be generated.
 
 ### Clean Built files
 
 1. To clean up build artifacts, run:
-    ```bash
-    make clean
-    ```
+   ```bash
+   make clean
+   ```
