@@ -365,7 +365,14 @@ int decrement7Seg(Time *time, int currIndex) {
 	return 0;
 }
 
+/**
+ * This function helps update all seven-segment displays with the current values
+ *
+ */
 void updateAll(Time *time, HEX_Registers1 *firstFour, HEX_Registers2 *secondTwo) {
+	//time = NULL;
+	if (!time) displayError(time, firstFour, secondTwo);
+
 	firstFour->firstdisp = bcd2sevenSegmentDecoder(time->sevenSeg[5]);
 	firstFour->seconddisp = bcd2sevenSegmentDecoder(time->sevenSeg[4]);
 	firstFour->thirddisp = bcd2sevenSegmentDecoder(time->sevenSeg[3]);
@@ -394,12 +401,6 @@ void updateAll(Time *time, HEX_Registers1 *firstFour, HEX_Registers2 *secondTwo)
 		secondTwo->sixthdisp = bcd2sevenSegmentDecoder(time->sevenSeg[0]);
 	}
 
-}
-
-int isValidHex(unsigned int val) {
-	return (val == 0x3F || val == 0x06 || val == 0x5B || val == 0x4F
-			|| val == 0x66 || val == 0x6D || val == 0x7D || val == 0x07
-			|| val == 0x7F || val == 0x6F || val == 0x00);
 }
 
 // Open /dev/mem to give access to physical addresses
@@ -446,10 +447,14 @@ int unmap_physical(void *virtual_base, unsigned int span) {
 	return 0;
 }
 
+/**
+ * This function sets up pointers for accessing the hex displays,
+ * buttons and the switches
+ */
+
 int setUpPointers() {
 	int fd = -1;       // used to open /dev/mem for access to physical addresses
 	void *LW_virtual = NULL; // used to map physical addresses for the light-weight bridge
-	void *HPS_virtual = NULL;
 
 	// Create virtual memory access to the FPGA light-weight bridge
 	if ((fd = open_physical(fd)) == -1) {
@@ -458,26 +463,26 @@ int setUpPointers() {
 	if ((LW_virtual = map_physical(fd, LW_BRIDGE_BASE, LW_BRIDGE_SPAN)) == NULL) {
 		return -1;
 	}
-	if ((HPS_virtual = map_physical(fd, HPS_BRIDGE_BASE, HPS_BRIDGE_SPAN))
-			== NULL) {
-		return -1;
-	}
 
+	// Set up the first pointer to the first four seven-segment displays
 	HEX_ptr1 = NULL;
 	HEX_ptr1 = (volatile unsigned int*) (LW_virtual + HEX3_HEX0_BASE);
 	if (!HEX_ptr1)
 		return -1;
 
+	// Set up the second pointer to the last two seven-segment displays
 	HEX_ptr2 = NULL;
 	HEX_ptr2 = (volatile unsigned int*) (LW_virtual + HEX5_HEX4_BASE);
 	if (!HEX_ptr2)
 		return -1;
 
+	// Set up the pointer to the switches
 	SW_ptr = NULL;
 	SW_ptr = (volatile unsigned int*) (LW_virtual + SW_BASE);
 	if (!SW_ptr)
 		return -1;
 
+	// Set up the pointer to the push buttons
 	KEY_ptr = NULL;
 	KEY_ptr = (volatile unsigned int*) (LW_virtual + KEY_BASE);
 	if (!KEY_ptr)
@@ -486,56 +491,34 @@ int setUpPointers() {
 	return 0;
 }
 
-// Function to convert decimal to 7-segment value
-unsigned int bcd2sevenSegmentDecoder(int digit) {
-	switch (digit) {
-	case 0:
-		return 0x3F; // 00111111 -> Display '0'
-	case 1:
-		return 0x06; // 00000110 -> Display '1'
-	case 2:
-		return 0x5B; // 01011011 -> Display '2'
-	case 3:
-		return 0x4F; // 01001111 -> Display '3'
-	case 4:
-		return 0x66; // 01100110 -> Display '4'
-	case 5:
-		return 0x6D; // 01101101 -> Display '5'
-	case 6:
-		return 0x7D; // 01111101 -> Display '6'
-	case 7:
-		return 0x07; // 00000111 -> Display '7'
-	case 8:
-		return 0x7F; // 01111111 -> Display '8'
-	case 9:
-		return 0x6F; // 01101111 -> Display '9'
-	default:
-		return 0x00; // Blank or off
-	}
-}
+/**
+ * This function handles time and switches in a continuous loop
+ */
 
 void* handleTimeAndSwitches(void *arg) {
 	SWRegister *mySwitches = (SWRegister*) SW_ptr; // Pointer to switch register
-
 	HEX_Registers1 *firstFour = (HEX_Registers1*) HEX_ptr1; // First four 7-segment display registers
 	HEX_Registers2 *secondTwo = (HEX_Registers2*) HEX_ptr2; // Last two 7-segment display registers
 
 	Time *time = (Time*) arg;  // Cast the argument to Time* type
 
-	Time blankTime = { .sevenSeg = { -1, -1, -1, -1, -1, -1 } };
-	int timeSaved = 1;
+	Time blankTime = { .sevenSeg = { -1, -1, -1, -1, -1, -1 } }; //Create a blank time to clear display when flashing
+	int timeSaved = 1; // Flag to track whether time has been saved yet
 
 	int seconds = time->sevenSeg[4] * 10 + time->sevenSeg[5];
 
+	// Initialize some sort of current state and alt state
+	// in order to toggle
 	int currState = mySwitches->sw0;
 	int altState = (currState == 1) ? 0 : 1;
 
 	while (1) {
+		// Check if switch 0 has been toggled
 		if (mySwitches->sw0 == altState) {
-			seconds = -1;
-			currState = altState;
+			seconds = -1; // Reset the seconds
+			currState = altState; // Update current state
 
-			altState = (currState == 1) ? 0 : 1;
+			altState = (currState == 1) ? 0 : 1; // Toggle the alt state
 
 			// Update the display with the new seconds
 			time->sevenSeg[4] = seconds / 10;
@@ -544,6 +527,7 @@ void* handleTimeAndSwitches(void *arg) {
 			continue;
 		}
 
+		// For now, artificially simulate time with 900 ms
 		usleep(900000);
 
 		// Increment the seconds
@@ -551,6 +535,7 @@ void* handleTimeAndSwitches(void *arg) {
 		time->sevenSeg[4] = seconds / 10;
 		time->sevenSeg[5] = seconds % 10;
 
+		// If we reeach 60 seconds, handle time accordingly
 		if (seconds == 60) {
 			seconds = 0;
 			time->sevenSeg[4] = seconds / 10;
@@ -558,14 +543,19 @@ void* handleTimeAndSwitches(void *arg) {
 			increment7Seg(time, 3);
 		}
 
+		// If at anytime switch 9 is on, update all displays and mark time as unsaved
 		if (mySwitches->sw9 == 1) {
 			updateAll(time, firstFour, secondTwo);
 			timeSaved = 0;
-		} else {
+		}
+		// IF switch 9 goes down
+		else {
+			// Check to see if the time is saved
 			if (!timeSaved) {
 				if (saveChanges(time) < 0) {
 					perror("Error saving time");
 				}
+
 				timeSaved = 1;  // Mark that time has been saved
 			}
 
@@ -575,6 +565,39 @@ void* handleTimeAndSwitches(void *arg) {
 
 		usleep(100000);
 	}
+}
+
+void displayError(Time *time, HEX_Registers1 *firstFour,
+		HEX_Registers2 *secondTwo) {
+	// Display "ERROR"
+	secondTwo->sixthdisp = getHexForLetter('E');
+	secondTwo->fifthdisp = getHexForLetter('R');
+	firstFour->fourthdisp = getHexForLetter('R');
+	firstFour->thirddisp = getHexForLetter('O');
+	firstFour->seconddisp = getHexForLetter('R');
+	firstFour->firstdisp = 0x00;  // Blank
+
+	sleep(2);
+
+	// Display "PLEASE"
+	secondTwo->sixthdisp = getHexForLetter('P');
+	secondTwo->fifthdisp = getHexForLetter('L');
+	firstFour->fourthdisp = getHexForLetter('E');
+	firstFour->thirddisp = getHexForLetter('A');
+	firstFour->seconddisp = getHexForLetter('S');
+	firstFour->firstdisp = getHexForLetter('E');
+
+	sleep(2);
+
+	// Display "RESET"
+	secondTwo->sixthdisp = getHexForLetter('R');
+	secondTwo->fifthdisp = getHexForLetter('E');
+	firstFour->fourthdisp = getHexForLetter('S');
+	firstFour->thirddisp = getHexForLetter('E');
+	firstFour->seconddisp = getHexForLetter('T');
+	firstFour->firstdisp = 0x00;  // Blank
+
+	sleep(2);
 }
 
 

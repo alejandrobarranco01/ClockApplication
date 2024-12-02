@@ -8,15 +8,25 @@
 #include "app.h"
 #include "hardware.h"
 
+/**
+ * @brief Main function for the Clock Application
+ *
+ * This function helps do the basic set up of the application,
+ * such as calling hardware initialization functions, reading saved time
+ * from memory and creates a thread to handle input.
+ *
+ */
 int main(int argc, char **argv) {
 
 	printf("Welcome Clock Application\n\n");
 
+	// If hardware pointers fail to initialize exit
 	if (setUpPointers() == -1)
 		exit(1);
 
 	Time *savedTime = readTimeFromMemory(); // Read time from memory
 
+	// Thread to handle inputs as well as seconds
 	pthread_t handleTimeAndSwitchesThread;
 
 	if (pthread_create(&handleTimeAndSwitchesThread, NULL,
@@ -45,6 +55,10 @@ int main(int argc, char **argv) {
 }
 
 /**
+ * @brief Enters the "Change Time" mode where a user can
+ * adjust the time to their needs/wants and also save their
+ * changes
+ *
  * This function will serve as a "Change Time" mode in which
  * a user can modify and save changes to the clock.
  */
@@ -81,3 +95,6 @@ int changeTimeMode(Time *time) {
 
 	return 0;
 }
+
+
+

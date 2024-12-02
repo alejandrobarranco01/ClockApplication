@@ -11,12 +11,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <pthread.h>
 
 #include "address_map_arm.h"
+#include "utility.h"
 
 typedef struct {
 	int sevenSeg[6];
@@ -72,7 +72,8 @@ int writeTo7Seg(Time *time, int currIndex, int value);
 int readFrom7Seg(const Time *time, int currIndex);
 int decrement7Seg(Time *time, int currIndex);
 void updateAll(Time *time, HEX_Registers1 *firstFour, HEX_Registers2 *secondTwo);
-int isValidHex(unsigned int val);
+void displayError(Time *time, HEX_Registers1 *firstFour, HEX_Registers2 *secondTwo);
+
 
 // Set up functions
 int open_physical(int);
@@ -80,7 +81,6 @@ void* map_physical(int, unsigned int, unsigned int);
 void close_physical(int);
 int unmap_physical(void*, unsigned int);
 int setUpPointers();
-unsigned int bcd2sevenSegmentDecoder(int digit);
 void* handleTimeAndSwitches(void *arg);
 
 #endif /* HARDWARE_H_ */
