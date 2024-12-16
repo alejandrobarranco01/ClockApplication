@@ -65,3 +65,22 @@ The project is compiled using a Makefile optimized for the DE10-Standard develop
    ```bash
    make clean
    ```
+
+### FPGA Configuration
+
+To configure the FPGA for the clock application:
+
+1. **Synthesize the DE10_Standard_Computer QPF File:**
+   - Open the Quartus Prime software.
+   - Load the project file for your DE10-Standard board.
+   - Synthesize the design by clicking on **Processing** > **Start Compilation**. This will generate the necessary configuration files.
+
+2. **Use the Quartus Programmer Tool:**
+   - Open the **Quartus Programmer** tool (you can find it under the **Tools** menu).
+   - Connect the DE10-Standard board to your computer via the USB-Blaster or USB cable.
+   - In the Quartus Programmer, select the appropriate hardware device (DE10-Standard).
+   - Click on **Add File** and select the compiled output file (e.g., `.sof` file) generated from the synthesis step.
+   - Click **Start** to upload the configuration to the FPGA.
+
+3. **Verify the Configuration:**
+   - After the FPGA configuration is complete, the clock application should now run on the DE10-Standard board, utilizing the FPGA resources for the seven-segment display and BCD decoder.
