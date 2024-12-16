@@ -11,7 +11,7 @@ Check out the video demo of the project here.
 
 ## Video Link
 
-[Video Link](https://youtu.be/BMC9nhsenpU)
+[Video Link](https://youtu.be/rhM_VRLb7cc)
 
 ## GitHub Link
 
