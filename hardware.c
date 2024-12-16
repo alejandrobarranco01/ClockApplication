@@ -12,13 +12,18 @@
  * and initializes it with an initial value representing the time.
  */
 Time* readTimeFromMemory() {
+	// Dynamically allocate memory for a pointer to a Time structure
 	Time *time = (Time*) malloc(sizeof(Time));
+
+	// If Time is a null pointer return an error
 	if (time == NULL) {
 		printf("Memory allocation failed\n");
 		return NULL;
 	}
 
+	// Open the text file that contains the saved time
 	FILE *file = fopen("/home/root/time/time.txt", "r");
+	// If there's an error opening the time text file, throw an error
 	if (file == NULL) {
 		perror("Error opening time.txt");
 		free(time);
@@ -26,81 +31,71 @@ Time* readTimeFromMemory() {
 	}
 
 	// Read the time values from the file and populate the Time structure
-	if (fscanf(file, "%d\n%d\n%d\n%d\n%d\n%d", &time->sevenSeg[0],
-			&time->sevenSeg[1], &time->sevenSeg[2], &time->sevenSeg[3],
-			&time->sevenSeg[4], &time->sevenSeg[5]) != 6) {
+	if (fscanf(file, "%d\n%d\n%d\n%d\n%d\n%d", &time->hoursTens,
+			&time->hoursOnes, &time->minutesTens, &time->minutesOnes,
+			&time->secondsTens, &time->secondsOnes) != 6) {
 		printf("Error reading time from file\n");
 		fclose(file);
 		free(time);
 		return NULL;
 	}
 
+	// Close the file
 	fclose(file);
 
 	// Display the time on the 7-segment displays
-	writeTo7Seg(time, 0, time->sevenSeg[0]);
-	writeTo7Seg(time, 1, time->sevenSeg[1]);
-	writeTo7Seg(time, 2, time->sevenSeg[2]);
-	writeTo7Seg(time, 3, time->sevenSeg[3]);
+	HEX_Registers *displays = (HEX_Registers*) (JP1_ptr + 0);
+	*(JP1_ptr + 1) = 0x00FFFFFF;
 
-	writeTo7Seg(time, 4, time->sevenSeg[4]);
-	writeTo7Seg(time, 5, time->sevenSeg[5]);
+	// Set up the displays based on the loaded time
+	updateAll(time, displays);
 
 	return time;
 }
 
 /**
- * This function prints the time to the console.
+ * This function makes a flashing like functionality
+ * on a given 7-segment display by writing the real value
+ * and then writing a value of 15 which triggers a blank screen
+ * based on the BCD decoder I made
  */
-int displayTime(const Time *time) {
-	printf("displayTime(const Time* time) -> %d%d:%d%d\n",
-			readFrom7Seg(time, 0), readFrom7Seg(time, 1), readFrom7Seg(time, 2),
-			readFrom7Seg(time, 3));
-
-	// Return some status code
-	return 0;
-}
-
 void flashDigit(Time *time, int currIndex) {
+	// Save the value of the current 7-segment display in a temp variable
 	int temp = readFrom7Seg(time, currIndex);
-	writeTo7Seg(time, currIndex, -1);
+	writeTo7Seg(time, currIndex, 15); // Make the display go blank
 	usleep(100000);
-	writeTo7Seg(time, currIndex, temp);
+	writeTo7Seg(time, currIndex, temp); // Display the regular value again
 	usleep(100000);
 }
 
 /**
  * This function will read inputs from the push buttons
+ * and returns which button was pushed
  */
 int readButtons(Time *time, int currIndex) {
-	// Will read hardware push buttons states
-	printf("readButtons()\n");
-
-	// Create a pointer to HEX0_HEX3Register mapped to HEX_ptr
+	// Create pointers to the Switch and Key Registers
 	KeyRegister *myButtons = (KeyRegister*) KEY_ptr;
-
 	SWRegister *mySwitches = (SWRegister*) SW_ptr;
 
+	// Use this as a flag to signal button press
 	int buttonPressed = -1;
 
+	// Run loop while buttons remain unpressed
 	while (buttonPressed == -1) {
 
+		// If the flag is not -2 and the S9 switch is up (on state) flash the digit
 		if (currIndex != -2 && mySwitches->sw9)
 			flashDigit(time, currIndex);
 
-		if (myButtons->key0) {
-			printf("KEY0 pressed\n");
-			buttonPressed = 4; // Key 0 corresponds to 4
-		} else if (myButtons->key1) {
-			printf("KEY1 pressed\n");
-			buttonPressed = 3; // Key 1 corresponds to 3
-		} else if (myButtons->key2) {
-			printf("KEY2 pressed\n");
-			buttonPressed = 2; // Key 2 corresponds to 2
-		} else if (myButtons->key3) {
-			printf("KEY3 pressed\n");
-			buttonPressed = 1; // Key 3 corresponds to 1
-		}
+		if (myButtons->key0)
+			buttonPressed = 4; // Key0 corresponds to 4
+		else if (myButtons->key1)
+			buttonPressed = 3; // Key1 corresponds to 3
+		else if (myButtons->key2)
+			buttonPressed = 2; // Key2 corresponds to 2
+		else if (myButtons->key3)
+			buttonPressed = 1; // Key3 corresponds to 1
+
 	}
 
 	// Wait until the button is released to avoid re-triggering
@@ -120,15 +115,17 @@ int saveChanges(const Time *time) {
 	// Implement saving time to memory
 	printf("saveChanges(const Time* time) -> Saving changes...\n");
 
+	// Open the text file and return an error if there's an issue opening the file
 	FILE *file = fopen("/home/root/time/time.txt", "w");
 	if (file == NULL) {
 		perror("Error opening time.txt");
 		return -1;
 	}
 
-	if (fprintf(file, "%d\n%d\n%d\n%d\n%d\n%d\n", time->sevenSeg[0],
-			time->sevenSeg[1], time->sevenSeg[2], time->sevenSeg[3],
-			time->sevenSeg[4], time->sevenSeg[5]) < 0) {
+	// Write to the file the current values from the time structure
+	if (fprintf(file, "%d\n%d\n%d\n%d\n%d\n%d\n", time->hoursTens,
+			time->hoursOnes, time->minutesTens, time->minutesOnes,
+			time->secondsTens, time->secondsOnes) < 0) {
 		perror("Error writing to time.txt");
 		fclose(file);
 		return -2;
@@ -149,24 +146,24 @@ int increment7Seg(Time *time, int currIndex) {
 	// Save value of current index into a temp value
 	int temp = readFrom7Seg(time, currIndex);
 
-	int firstSeg = readFrom7Seg(time, 0);
-	int secondSeg = readFrom7Seg(time, 1);
+	int hex5Value = readFrom7Seg(time, 5);
+	int hex4Value = readFrom7Seg(time, 4);
 
 	switch (currIndex) {
 
 	// HEX5 / 7Seg[0]
-	case 0:
+	case 5:
 
 		// If the second display is equal to 9
 		// keep the first display between 0 and 2
 		// and set the second display equal to 0
-		if (secondSeg == 9) {
+		if (hex4Value == 9) {
 			temp = (temp + 1) % 3;
-			writeTo7Seg(time, 1, 0);
+			writeTo7Seg(time, 4, 0);
 		}
 		// If the second display is greater than 3,
 		// keep the first display between 0 and 1
-		else if (secondSeg > 3)
+		else if (hex4Value > 3)
 			temp = (temp + 1) % 2;
 		// Otherwise keep it between 0 and 2
 		else
@@ -174,17 +171,17 @@ int increment7Seg(Time *time, int currIndex) {
 		break;
 
 		// HEX4 / 7Seg[1]
-	case 1:
+	case 4:
 		// If the first display is greater than 1 AND
 		// the second display is currently 3, set current display (first)
 		// and the first display equal to 0 (clock reset)
-		if (firstSeg > 1 && temp == 3) {
+		if (hex5Value > 1 && temp == 3) {
 			temp = 0;
-			writeTo7Seg(time, 0, 0);
+			writeTo7Seg(time, 5, 0);
 		}
 		// If the first display is greater than 1,
 		// keep the second display between 0 and 4
-		else if (firstSeg > 1)
+		else if (hex5Value > 1)
 			temp = (temp + 1) % 5;
 		// Otherwise keep it between 0 and 11
 		else {
@@ -193,13 +190,13 @@ int increment7Seg(Time *time, int currIndex) {
 			// equal to 0 and call increment7Seg() on the previous display
 			if (temp == 10) {
 				temp = 0;
-				increment7Seg(time, currIndex - 1);
+				increment7Seg(time, currIndex + 1);
 			}
 		}
 		break;
 
 		// HEX3 / 7Seg[2]
-	case 2:
+	case 3:
 		// Keep the display between 0 and 6
 		temp = (temp + 1) % 7;
 
@@ -207,12 +204,12 @@ int increment7Seg(Time *time, int currIndex) {
 		// equal to 0 and call increment7Seg() on the previous display
 		if (temp == 6) {
 			temp = 0;
-			increment7Seg(time, currIndex - 1);
+			increment7Seg(time, currIndex + 1);
 		}
 		break;
 
-		// HEX4 / 7Seg[3]
-	case 3:
+		// HEX2 / 7Seg[3]
+	case 2:
 		// Keep the display between 0 and 10
 		temp = (temp + 1) % 11;
 
@@ -220,7 +217,7 @@ int increment7Seg(Time *time, int currIndex) {
 		// equal to 0 and call increment7Seg() on the previous display
 		if (temp == 10) {
 			temp = 0;
-			increment7Seg(time, currIndex - 1);
+			increment7Seg(time, currIndex + 1);
 		}
 	}
 
@@ -235,14 +232,45 @@ int increment7Seg(Time *time, int currIndex) {
  * This function will write to a single 7-segment display.
  */
 int writeTo7Seg(Time *time, int currIndex, int value) {
-	// Implement some logic to write to 7 segment display
-	time->sevenSeg[currIndex] = value;
+	// Create pointer to HEX displays and set them as output
+	HEX_Registers *displays = (HEX_Registers*) (JP1_ptr + 0);
+	*(JP1_ptr + 1) = 0x00FFFFFF;
 
-	// Create a pointer to HEX0_HEX3Register mapped to HEX_ptr1
-	HEX_Registers1 *firstFour = (HEX_Registers1*) HEX_ptr1;
-	HEX_Registers2 *secondTwo = (HEX_Registers2*) HEX_ptr2;
+	switch (currIndex) {
+	// Update HEX0 (Seconds ones places)
+	case 0:
+		time->secondsOnes = value;
+		displays->firstdisp = time->secondsOnes;
+		break;
+		// Update HEX1 (Seconds tens places)
+	case 1:
+		time->secondsTens = value;
+		displays->seconddisp = time->secondsTens;
+		break;
+		// Update HEX2 (Minutes ones places)
+	case 2:
+		time->minutesOnes = value;
+		displays->thirddisp = time->minutesOnes;
+		break;
+		// Update HEX3 (Minutes tens places)
+	case 3:
+		time->minutesTens = value;
+		displays->fourthdisp = time->minutesTens;
+		break;
+		// Update HEX4 (Hours ones places)
+	case 4:
+		time->hoursOnes = value;
+		displays->fifthdisp = time->hoursOnes;
+		break;
+		// Update HEX5 (Hours tens places)
+	case 5:
+		time->hoursTens = value;
+		displays->sixthdisp = time->hoursTens;
+		break;
 
-	updateAll(time, firstFour, secondTwo);
+	}
+	// Update all the displays for consistency
+	updateAll(time, displays);
 
 	// Return some status code
 	return 0;
@@ -253,28 +281,24 @@ int writeTo7Seg(Time *time, int currIndex, int value) {
  * display and return a decimal representation of the value.
  */
 int readFrom7Seg(const Time *time, int currIndex) {
-	// Return decimal value of the current 7 segment display
-	return time->sevenSeg[currIndex];
+	// Create pointer to HEX displays
+	HEX_Registers *displays = (HEX_Registers*) (JP1_ptr + 0);
+	*(JP1_ptr + 1) = 0x00FFFFFF;
 
-	// Create a pointer to HEX0_HEX3Register mapped to HEX_ptr1
-	HEX_Registers1 *firstFour = (HEX_Registers1*) HEX_ptr1;
-	HEX_Registers2 *secondTwo = (HEX_Registers2*) HEX_ptr2;
-
+	// Return the value of a given display, casted as an int
 	switch (currIndex) {
-
-	case 3:
-		return (int) firstFour->thirddisp;
-		break;
 	case 2:
-		return (int) firstFour->fourthdisp;
+		return (int) displays->thirddisp;
 		break;
-	case 1:
-		return (int) secondTwo->fifthdisp;
+	case 3:
+		return (int) displays->fourthdisp;
 		break;
-	case 0:
-		return (int) secondTwo->sixthdisp;
+	case 4:
+		return (int) displays->fifthdisp;
 		break;
-
+	case 5:
+		return (int) displays->sixthdisp;
+		break;
 	}
 	return -1;
 
@@ -288,42 +312,41 @@ int decrement7Seg(Time *time, int currIndex) {
 	// Save value of current index into a temp value
 	int temp = readFrom7Seg(time, currIndex);
 
-	int firstSeg = readFrom7Seg(time, 0);
-	int secondSeg = readFrom7Seg(time, 1);
+	int hex5Value = readFrom7Seg(time, 5); // Get the value for HEX5 (Hours tens place)
+	int hex4Value = readFrom7Seg(time, 4); // Get the value for HEX4 (Hours ones place)
 
 	switch (currIndex) {
 
-	// HEX5 / 7Seg[0]
-	case 0:
+	// HEX5 (Hours tens place)
+	case 5:
 		// If the first display is at 0, add three to
 		// keep it in bounds, and if the second display
 		// is greater than 4, set the second display equal
 		// to zero
 		if (temp == 0) {
 			temp += 3;
-			if (secondSeg > 4)
-				writeTo7Seg(time, 1, 0);
+			if (hex4Value > 4)
+				writeTo7Seg(time, 4, 0);
 		}
 		break;
 
-		// HEX4 / 7Seg[1]
-	case 1:
+		// HEX4 (Hours ones place)
+	case 4:
 		// If the second display is at 0 decrement the previous display
 		// and the first display is greater than zero, add ten to the
 		// current display to keep it in bounds Otherwise if the first
 		// display is at 0, and add four to the current display
 		if (temp == 0) {
-			decrement7Seg(time, currIndex - 1);
-			if (firstSeg > 0)
+			decrement7Seg(time, currIndex + 1);
+			if (hex5Value > 0)
 				temp += 10;
-			else if (firstSeg == 0)
+			else if (hex5Value == 0)
 				temp += 4;
 		}
 
 		break;
-
-		// HEX3 / 7Seg[2]
-	case 2:
+		// HEX3 (Minutes tens place)
+	case 3:
 		// If the third display is at 0, add six to keep
 		// it in bounds when we decrement it
 		// If the second display greater than 0, decrement it
@@ -333,26 +356,26 @@ int decrement7Seg(Time *time, int currIndex) {
 		// the second display to be at 9
 		if (temp == 0) {
 			temp += 6;
-			if (secondSeg > 0)
-				decrement7Seg(time, 1);
-			else if (secondSeg == 0 && firstSeg == 0) {
-				writeTo7Seg(time, 0, 2);
-				writeTo7Seg(time, 1, 3);
+			if (hex4Value > 0)
+				decrement7Seg(time, 4);
+			else if (hex4Value == 0 && hex5Value == 0) {
+				writeTo7Seg(time, 5, 2);
+				writeTo7Seg(time, 4, 3);
 			} else {
-				decrement7Seg(time, 0);
-				writeTo7Seg(time, 1, 9);
+				decrement7Seg(time, 5);
+				writeTo7Seg(time, 4, 9);
 			}
 		}
 		break;
 
-		// HEX2 / 7Seg[3]
-	case 3:
+		// HEX2 (Minutes ones place)
+	case 2:
 		// If the fourth display is at 0, add ten to keep
 		// it in bounds when we decrement it and decrement the previous
 		// display
 		if (temp == 0) {
 			temp += 10;
-			decrement7Seg(time, currIndex - 1);
+			decrement7Seg(time, currIndex + 1);
 		}
 		break;
 
@@ -369,38 +392,13 @@ int decrement7Seg(Time *time, int currIndex) {
  * This function helps update all seven-segment displays with the current values
  *
  */
-void updateAll(Time *time, HEX_Registers1 *firstFour, HEX_Registers2 *secondTwo) {
-	//time = NULL;
-	if (!time) displayError(time, firstFour, secondTwo);
-
-	firstFour->firstdisp = bcd2sevenSegmentDecoder(time->sevenSeg[5]);
-	firstFour->seconddisp = bcd2sevenSegmentDecoder(time->sevenSeg[4]);
-	firstFour->thirddisp = bcd2sevenSegmentDecoder(time->sevenSeg[3]);
-	firstFour->fourthdisp = bcd2sevenSegmentDecoder(time->sevenSeg[2]);
-	secondTwo->fifthdisp = bcd2sevenSegmentDecoder(time->sevenSeg[1]);
-	secondTwo->sixthdisp = bcd2sevenSegmentDecoder(time->sevenSeg[0]);
-
-	// Prevent incorrect digits by reading and fixing any mistakes
-	while (!isValidHex(firstFour->firstdisp)) {
-		firstFour->firstdisp = bcd2sevenSegmentDecoder(time->sevenSeg[5]);
-	}
-	while (!isValidHex(firstFour->seconddisp)) {
-		firstFour->seconddisp = bcd2sevenSegmentDecoder(time->sevenSeg[4]);
-	}
-
-	while (!isValidHex(firstFour->thirddisp)) {
-		firstFour->thirddisp = bcd2sevenSegmentDecoder(time->sevenSeg[3]);
-	}
-	while (!isValidHex(firstFour->fourthdisp)) {
-		firstFour->fourthdisp = bcd2sevenSegmentDecoder(time->sevenSeg[2]);
-	}
-	while (!isValidHex(secondTwo->fifthdisp)) {
-		secondTwo->fifthdisp = bcd2sevenSegmentDecoder(time->sevenSeg[1]);
-	}
-	while (!isValidHex(secondTwo->sixthdisp)) {
-		secondTwo->sixthdisp = bcd2sevenSegmentDecoder(time->sevenSeg[0]);
-	}
-
+void updateAll(Time *time, HEX_Registers *displays) {
+	displays->firstdisp = time->secondsOnes;
+	displays->seconddisp = time->secondsTens;
+	displays->thirddisp = time->minutesOnes;
+	displays->fourthdisp = time->minutesTens;
+	displays->fifthdisp = time->hoursOnes;
+	displays->sixthdisp = time->hoursTens;
 }
 
 // Open /dev/mem to give access to physical addresses
@@ -464,18 +462,6 @@ int setUpPointers() {
 		return -1;
 	}
 
-	// Set up the first pointer to the first four seven-segment displays
-	HEX_ptr1 = NULL;
-	HEX_ptr1 = (volatile unsigned int*) (LW_virtual + HEX3_HEX0_BASE);
-	if (!HEX_ptr1)
-		return -1;
-
-	// Set up the second pointer to the last two seven-segment displays
-	HEX_ptr2 = NULL;
-	HEX_ptr2 = (volatile unsigned int*) (LW_virtual + HEX5_HEX4_BASE);
-	if (!HEX_ptr2)
-		return -1;
-
 	// Set up the pointer to the switches
 	SW_ptr = NULL;
 	SW_ptr = (volatile unsigned int*) (LW_virtual + SW_BASE);
@@ -488,6 +474,12 @@ int setUpPointers() {
 	if (!KEY_ptr)
 		return -1;
 
+	// Set up pointer to the JP1 expansion port (for the HEX displays)
+	JP1_ptr = NULL;
+	JP1_ptr = (volatile unsigned int*) (LW_virtual + JP1_BASE);
+	if (!JP1_ptr)
+		return -1;
+
 	return 0;
 }
 
@@ -497,15 +489,15 @@ int setUpPointers() {
 
 void* handleTimeAndSwitches(void *arg) {
 	SWRegister *mySwitches = (SWRegister*) SW_ptr; // Pointer to switch register
-	HEX_Registers1 *firstFour = (HEX_Registers1*) HEX_ptr1; // First four 7-segment display registers
-	HEX_Registers2 *secondTwo = (HEX_Registers2*) HEX_ptr2; // Last two 7-segment display registers
+	HEX_Registers *displays = (HEX_Registers*) (JP1_ptr + 0);
+	*(JP1_ptr + 1) = 0x00FFFFFF;
 
 	Time *time = (Time*) arg;  // Cast the argument to Time* type
 
-	Time blankTime = { .sevenSeg = { -1, -1, -1, -1, -1, -1 } }; //Create a blank time to clear display when flashing
+	Time blankTime = { 15, 15, 15, 15, 15, 15 }; //Create a blank time to clear display when flashing
 	int timeSaved = 1; // Flag to track whether time has been saved yet
 
-	int seconds = time->sevenSeg[4] * 10 + time->sevenSeg[5];
+	int seconds = time->secondsTens * 10 + time->secondsOnes;
 
 	// Initialize some sort of current state and alt state
 	// in order to toggle
@@ -515,14 +507,16 @@ void* handleTimeAndSwitches(void *arg) {
 	while (1) {
 		// Check if switch 0 has been toggled
 		if (mySwitches->sw0 == altState) {
-			seconds = -1; // Reset the seconds
+			seconds = 0; // Reset the seconds
 			currState = altState; // Update current state
 
 			altState = (currState == 1) ? 0 : 1; // Toggle the alt state
 
 			// Update the display with the new seconds
-			time->sevenSeg[4] = seconds / 10;
-			time->sevenSeg[5] = seconds % 10;
+			time->secondsTens = 0;
+			time->secondsOnes = 0;
+
+			updateAll(time, displays);
 
 			continue;
 		}
@@ -532,20 +526,21 @@ void* handleTimeAndSwitches(void *arg) {
 
 		// Increment the seconds
 		seconds++;
-		time->sevenSeg[4] = seconds / 10;
-		time->sevenSeg[5] = seconds % 10;
+		time->secondsTens = seconds / 10;
+		time->secondsOnes = seconds % 10;
 
-		// If we reeach 60 seconds, handle time accordingly
+		// If we reach 60 seconds, handle time accordingly
 		if (seconds == 60) {
 			seconds = 0;
-			time->sevenSeg[4] = seconds / 10;
-			time->sevenSeg[5] = seconds % 10;
+			time->secondsTens = seconds / 10;
+			time->secondsOnes = seconds % 10;
 			increment7Seg(time, 3);
 		}
 
 		// If at anytime switch 9 is on, update all displays and mark time as unsaved
 		if (mySwitches->sw9 == 1) {
-			updateAll(time, firstFour, secondTwo);
+			updateAll(time, displays);
+
 			timeSaved = 0;
 		}
 		// IF switch 9 goes down
@@ -560,44 +555,10 @@ void* handleTimeAndSwitches(void *arg) {
 			}
 
 			// Blank the display if sw9 is OFF
-			updateAll(&blankTime, firstFour, secondTwo);
+			updateAll(&blankTime, displays);
 		}
 
 		usleep(100000);
 	}
 }
-
-void displayError(Time *time, HEX_Registers1 *firstFour,
-		HEX_Registers2 *secondTwo) {
-	// Display "ERROR"
-	secondTwo->sixthdisp = getHexForLetter('E');
-	secondTwo->fifthdisp = getHexForLetter('R');
-	firstFour->fourthdisp = getHexForLetter('R');
-	firstFour->thirddisp = getHexForLetter('O');
-	firstFour->seconddisp = getHexForLetter('R');
-	firstFour->firstdisp = 0x00;  // Blank
-
-	sleep(2);
-
-	// Display "PLEASE"
-	secondTwo->sixthdisp = getHexForLetter('P');
-	secondTwo->fifthdisp = getHexForLetter('L');
-	firstFour->fourthdisp = getHexForLetter('E');
-	firstFour->thirddisp = getHexForLetter('A');
-	firstFour->seconddisp = getHexForLetter('S');
-	firstFour->firstdisp = getHexForLetter('E');
-
-	sleep(2);
-
-	// Display "RESET"
-	secondTwo->sixthdisp = getHexForLetter('R');
-	secondTwo->fifthdisp = getHexForLetter('E');
-	firstFour->fourthdisp = getHexForLetter('S');
-	firstFour->thirddisp = getHexForLetter('E');
-	firstFour->seconddisp = getHexForLetter('T');
-	firstFour->firstdisp = 0x00;  // Blank
-
-	sleep(2);
-}
-
 

@@ -16,24 +16,25 @@
 #include <pthread.h>
 
 #include "address_map_arm.h"
-#include "utility.h"
 
 typedef struct {
-	int sevenSeg[6];
+    int hoursTens;    // Tens place of hours
+    int hoursOnes;    // Ones place of hours
+    int minutesTens;  // Tens place of minutes
+    int minutesOnes;  // Ones place of minutes
+    int secondsTens;  // Tens place of seconds
+    int secondsOnes;  // Ones place of seconds
 } Time;
 
 typedef struct {
-	unsigned int firstdisp :8;
-	unsigned int seconddisp :8;
-	unsigned int thirddisp :8;
-	unsigned int fourthdisp :8;
-} HEX_Registers1;
-
-typedef struct {
-	unsigned int fifthdisp :8;
-	unsigned int sixthdisp :8;
-	unsigned int :16;
-} HEX_Registers2;
+	unsigned int firstdisp :4;
+	unsigned int seconddisp :4;
+	unsigned int thirddisp :4;
+	unsigned int fourthdisp :4;
+	unsigned int fifthdisp :4;
+	unsigned int sixthdisp :4;
+	unsigned int rest : 8;
+} HEX_Registers;
 
 typedef struct {
 	unsigned int sw0 :1;
@@ -57,13 +58,11 @@ typedef struct {
 	unsigned int :28;
 } KeyRegister;
 
-volatile unsigned int *HEX_ptr1;
-volatile unsigned int *HEX_ptr2;
 volatile unsigned int *KEY_ptr;
 volatile unsigned int *SW_ptr;
+volatile unsigned int *JP1_ptr;
 
 Time* readTimeFromMemory();
-int displayTime(const Time *time);
 int readButtons(Time *time, int currIndex);
 void flashDigit(Time *time, int currIndex);
 int saveChanges(const Time *time);
@@ -71,9 +70,7 @@ int increment7Seg(Time *time, int currIndex);
 int writeTo7Seg(Time *time, int currIndex, int value);
 int readFrom7Seg(const Time *time, int currIndex);
 int decrement7Seg(Time *time, int currIndex);
-void updateAll(Time *time, HEX_Registers1 *firstFour, HEX_Registers2 *secondTwo);
-void displayError(Time *time, HEX_Registers1 *firstFour, HEX_Registers2 *secondTwo);
-
+void updateAll(Time *time, HEX_Registers* displays);
 
 // Set up functions
 int open_physical(int);

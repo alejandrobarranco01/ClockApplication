@@ -35,16 +35,17 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// Main display time loop
 	while (1) {
-		displayTime(savedTime); // Display Time
-
+		// -2 is a flag to signify that we are in display time mode
+		// so that the flash digit function isn't triggered
 		int button = readButtons(savedTime, -2); // Wait for button pressed
-		if (button == 4) {
 
+		// If KEY0 is pressed then enter change time mode
+		if (button == 4)
 			changeTimeMode(savedTime);  // Enter change time mode
-
-		} else
-			continue;
+		else
+			continue; // Otherwise keep waiting for input
 	}
 
 	pthread_join(handleTimeAndSwitchesThread, NULL);
@@ -64,37 +65,41 @@ int main(int argc, char **argv) {
  */
 int changeTimeMode(Time *time) {
 	printf("You are in changeTimeMode(Time* time)\n");
-	int currIndex = 0; // Initialize index for displays
 
+	// We will start on HEX2 (minutes ones)
+	int currIndex = 2;
+
+	// Main change time mode loop
 	while (1) {
 
+		// Wait for button to be pressed, pass the current index as a flag
+		// so that digit flashes
 		int button = readButtons(time, currIndex);
 
 		switch (button) {
+		// KEY0 returns back to main mode
 		case 4:
 			saveChanges(time);
 			return 0;
 			break;
+			// KEY1 increments in the index
 		case 3:
 			printf("Increment index\n");
-			currIndex = (currIndex + 1) % 4; // To stay in bounds
+			currIndex = (currIndex + 1) % 4 + 2; // To stay in bounds
 			printf("New index: %d\n", currIndex);
 			break;
+			// KEY2 increments the value at the current index
 		case 2:
 			printf("Increment value\n");
 			increment7Seg(time, currIndex);
-			displayTime(time); // Show new time (for now)
 			break;
+			// KEY3 decrements the value at the current index
 		case 1:
 			printf("Decrement value\n");
 			decrement7Seg(time, currIndex);
-			displayTime(time); // Show new time (for now)
 			break;
 		};
 	}
 
 	return 0;
 }
-
-
-

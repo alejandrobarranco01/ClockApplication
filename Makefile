@@ -10,7 +10,7 @@ CC = $(CROSS_COMPILE)gcc
 ARCH = arm
 
 # List of source files
-SRCS = app.c hardware.c utility.c
+SRCS = app.c hardware.c
 
 # Object files generated from source files
 OBJS = $(SRCS:.c=.o)
