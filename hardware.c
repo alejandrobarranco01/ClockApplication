@@ -534,7 +534,7 @@ void* handleTimeAndSwitches(void *arg) {
 			seconds = 0;
 			time->secondsTens = seconds / 10;
 			time->secondsOnes = seconds % 10;
-			increment7Seg(time, 3);
+			increment7Seg(time, 2);
 		}
 
 		// If at anytime switch 9 is on, update all displays and mark time as unsaved

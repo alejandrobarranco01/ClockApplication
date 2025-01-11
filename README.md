@@ -1,25 +1,24 @@
-# Clock Application
+# Clock Application on DE10 Standard
 
-This is my Clock Application project for SWE-350. This project will run on the DE10-Standard development board. The application is implemented in C and will utilize the ARM HPS and FPGA on the board to create a simple clock application.
+This is my Clock Application project that runs on the DE10-Standard development board and is implemented using C and VHDL. The application uses the ARM HPS and FPGA on the board to simulate a digital clock, displaying time on the board's seven-segment displays.
+
+## Demos
+
+_System Demo #1: Display Time_
+
+![System Demo #1: Display time]()
+
+_System Demo #2: Change Time_
+
+![System Demo #2: Change Time]()
 
 ## Author
 
 Alejandro Barranco-Leyte
 
-Demo Video
-Check out the video demo of the project here.
-
-## Video Link
-
-[Video Link](https://youtu.be/rhM_VRLb7cc)
-
-## GitHub Link
-
-[Github Link](https://github.com/alejandrobarranco01/ClockApplication)
-
 ## Project Description
 
-The application simulates a simple clock using military time format, displayed on four seven-segment displays (HEX2 through HEX5). Users can view and modify the time, including hours, minutes, and seconds, using the board's switches and buttons. The FPGA manages the seven-segment displays via a BCD decoder.
+The application simulates a simple clock using military time format, displayed on six seven-segment displays. Users can view and modify the time, including hours, minutes, and seconds, using the board's switches and buttons. The FPGA manages the seven-segment displays via a BCD decoder.
 
 ### Features
 
@@ -36,9 +35,11 @@ The application simulates a simple clock using military time format, displayed o
 
 ## Code Structure
 
-- `app.c`: Main application logic handling the display and user interaction.
-- `hardware.c`: Interface with the hardware components, including reading inputs and controlling the displays.
-- `hardware.h` and `app.h`: Header files for function declarations and structure definitions.
+- [`app.c`](app.c): Main application logic handling the display and user interaction.
+- [`hardware.c`](hardware.c): Interface with the hardware components, including reading inputs and controlling the displays.
+- [`hardware.h`](hardware.h) and [`app.h`](app.h): Header files for function declarations and structure definitions.
+- [`DE10_Standard_Computer.v`](Quartus/DE10_Standard_Computer.v): FPGA configuration file defining the hardware connections and logic.
+- [`bcd_7segment.vhd`](Quartus/bcd_7segment.vhd): VHDL file defining the BCD to seven-segment display decoder.
 
 ## Building the Project
 
@@ -48,39 +49,57 @@ The project is compiled using a Makefile optimized for the DE10-Standard develop
 
 - ARM cross-compilation tools (`arm-linux-gnueabihf-gcc`).
 
-### Build Instructions
+## Build Instructions
 
-1. Clone the repository to your development environment.
-2. Run `make` to build the application:
+1. **Clone the Repository:**
 
-   ```bash
-   make
-   ```
+   - Clone the repository to your local development environment:
+     ```bash
+     git clone https://github.com/alejandrobarranco01/ClockApplication.git
+     ```
+   - Navigate into the project directory:
+     ```bash
+     cd ClockApplication
+     ```
 
-3. The executable ClockApplication will be generated.
+2. **Build the Application:**
 
-### Clean Built files
+   - Run `make` to build the application:
+     ```bash
+     make
+     ```
 
-1. To clean up build artifacts, run:
-   ```bash
-   make clean
-   ```
+3. **Executable:**
 
-### FPGA Configuration
+   - The executable `ClockApplication` will be generated in the project directory.
+
+4. **Run the Application:**
+   - Once built, you can run the application with:
+     ```bash
+     ./ClockApplication
+     ```
+
+### Clean Built Files
+
+1. **Clean Up:**
+   - To clean up build artifacts and temporary files, run:
+     ```bash
+     make clean
+     ```
+
+## FPGA Configuration
 
 To configure the FPGA for the clock application:
 
-1. **Synthesize the DE10_Standard_Computer QPF File:**
-   - Open the Quartus Prime software.
-   - Load the project file for your DE10-Standard board.
-   - Synthesize the design by clicking on **Processing** > **Start Compilation**. This will generate the necessary configuration files.
+1. **Use the Quartus Programmer Tool:**
 
-2. **Use the Quartus Programmer Tool:**
    - Open the **Quartus Programmer** tool (you can find it under the **Tools** menu).
    - Connect the DE10-Standard board to your computer via the USB-Blaster or USB cable.
-   - In the Quartus Programmer, select the appropriate hardware device (DE10-Standard).
-   - Click on **Add File** and select the compiled output file (e.g., `.sof` file) generated from the synthesis step.
+   - In the Quartus Programmer, click **Auto Detect** on the **Select Device** page to automatically detect the connected hardware.
+   - Select the **5CSXFC6D6** device.
+   - Click on **Add File** and select the compiled output file [`DE10_Standard_Computer_time_limited.sof`](Quartus/DE10_Standard_Computer_time_limited.sof).
    - Click **Start** to upload the configuration to the FPGA.
 
-3. **Verify the Configuration:**
+2. **Verify the Configuration:**
    - After the FPGA configuration is complete, the clock application should now run on the DE10-Standard board, utilizing the FPGA resources for the seven-segment display and BCD decoder.
+   - The Quartus Programmer will indicate a **success** message when the configuration is successfully applied.
