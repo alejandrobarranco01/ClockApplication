@@ -1,6 +1,6 @@
 # Clock Application on DE10 Standard
 
-This is my Clock Application project that runs on the DE10-Standard development board and is implemented using C and VHDL. The application uses the ARM HPS and FPGA on the board to simulate a digital clock, displaying time on the board's seven-segment displays.
+This is my Clock Application project that runs on the DE10-Standard development board and is implemented using C, Verilog, and VHDL. The application uses the ARM HPS and FPGA on the board to simulate a digital clock, displaying time on the board's seven-segment displays.
 
 ## Demos
 
