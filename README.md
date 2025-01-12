@@ -14,8 +14,8 @@ _System Demo #2: Change Time_
 
 ## Author
 
+_Alejandro Barranco-Leyte_
 <img src="https://media.licdn.com/dms/image/v2/D5603AQHnmxmLnIzUTQ/profile-displayphoto-shrink_400_400/B56ZOiFBHpG8Ao-/0/1733591045903?e=1738800000&v=beta&t=KAaZJ0CRwZDZlGCOB7exF26cwWCaZpNZtEIpxAiRO8Y" alt="Alejandro Barranco-Leyte" width="40%" />
-<h2>Alejandro Barranco-Leyte</h2>
 
 ## Project Description
 
