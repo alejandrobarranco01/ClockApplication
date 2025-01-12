@@ -6,19 +6,25 @@ This is my Clock Application project that runs on the DE10-Standard development 
 
 _System Demo #1: Display Time_
 
-![System Demo #1: Display time]()
+![System Demo #1: Display time](/img/show_time.gif)
 
 _System Demo #2: Change Time_
 
-![System Demo #2: Change Time]()
+![System Demo #2: Change Time](/img/change_time.gif)
 
 ## Author
 
-Alejandro Barranco-Leyte
+![Alejandro Barranco-Leyte](https://media.licdn.com/dms/image/v2/D5603AQHnmxmLnIzUTQ/profile-displayphoto-shrink_400_400/B56ZOiFBHpG8Ao-/0/1733591045903?e=1738800000&v=beta&t=KAaZJ0CRwZDZlGCOB7exF26cwWCaZpNZtEIpxAiRO8Y)
+
+_Alejandro Barranco-Leyte_
 
 ## Project Description
 
 The application simulates a simple clock using military time format, displayed on six seven-segment displays. Users can view and modify the time, including hours, minutes, and seconds, using the board's switches and buttons. The FPGA manages the seven-segment displays via a BCD decoder.
+
+# Digital Clock Interface: Time Display and Adjustment Controls
+
+![Digital Clock Interface](img/clock_control.png)
 
 ### Features
 
@@ -32,6 +38,10 @@ The application simulates a simple clock using military time format, displayed o
 - **SW0** resets the seconds while in time change mode.
 - Flashes the current digit being modified for user clarity.
 - The clock reads and saves the current time to a text file for persistence between sessions.
+
+# System Design Overview
+
+![System Design](img/system_design.png)
 
 ## Code Structure
 
@@ -47,7 +57,7 @@ The project is compiled using a Makefile optimized for the DE10-Standard develop
 
 ### Prerequisites
 
-- ARM cross-compilation tools (`arm-linux-gnueabihf-gcc`).
+- **ARM Cross-Compilation Tools**: You will need the `arm-linux-gnueabihf-gcc` toolchain. In this project, I used **gcc-linaro-4.8-2015.06-x86_64_arm-linux-gnueabihf**.
 
 ## Build Instructions
 
