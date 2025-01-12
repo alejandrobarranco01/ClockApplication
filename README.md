@@ -103,7 +103,7 @@ To configure the FPGA for the clock application:
 1. **Use the Quartus Programmer Tool:**
 
    - Open the **Quartus Programmer** tool (you can find it under the **Tools** menu).
-   - Connect the DE10-Standard board to your computer via the USB-Blaster or USB cable.
+   - Connect the DE10-Standard board to your computer via the USB-Blaster (Make sure you have the driver installed).
    - In the Quartus Programmer, click **Auto Detect** on the **Select Device** page to automatically detect the connected hardware.
    - Select the **5CSXFC6D6** device.
    - Click on **Add File** and select the compiled output file [`DE10_Standard_Computer_time_limited.sof`](Quartus/DE10_Standard_Computer_time_limited.sof).
