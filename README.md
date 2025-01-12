@@ -6,15 +6,16 @@ This is my Clock Application project that runs on the DE10-Standard development 
 
 _System Demo #1: Display Time_
 
-<img src="/img/show_time.gif" alt="System Demo #1: Display Time" width="50%" />
+![System Demo #1: Display time](/img/show_time.gif)
 
 _System Demo #2: Change Time_
 
-<img src="/img/change_time.gif" alt="System Demo #2: Change Time" width="50%" />
+![System Demo #2: Change Time](/img/change_time.gif)
 
 ## Author
 
 <img src="https://media.licdn.com/dms/image/v2/D5603AQHnmxmLnIzUTQ/profile-displayphoto-shrink_400_400/B56ZOiFBHpG8Ao-/0/1733591045903?e=1738800000&v=beta&t=KAaZJ0CRwZDZlGCOB7exF26cwWCaZpNZtEIpxAiRO8Y" alt="Alejandro Barranco-Leyte" width="100" />
+_Alejandro Barranco-Leyte_
 
 ## Project Description
 
