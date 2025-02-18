@@ -15,7 +15,7 @@ _System Demo #2: Change Time_
 ## Author
 
 _Alejandro Barranco-Leyte_ <br>
-<img src="ale.jpeg" alt="Alejandro Barranco-Leyte" width="40%" />
+<img src="/img/ale.jpeg" alt="Alejandro Barranco-Leyte" width="40%" />
 
 ## Project Description
 
