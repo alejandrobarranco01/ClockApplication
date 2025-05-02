@@ -1,0 +1,28 @@
+# Ignore everything by default
+*
+
+# But don't ignore these specific files and folders
+!.gitignore
+!minterms.py
+!Audio_Subsystem.qsys
+!bcd_7segment.vhd
+!Char_Buf_Subsystem.qsys
+!Computer_System/
+!Computer_System.qsys
+!Computer_System.sopcinfo
+!Computer_System.sopcinfo.amp
+!DE10_Standard_Computer_assignment_defaults.qdf
+!DE10_Standard_Computer.done
+!DE10_Standard_Computer.qpf
+!DE10_Standard_Computer.qsf
+!DE10_Standard_Computer.sdc
+!DE10_Standard_Computer.sld
+!DE10_Standard_Computer.v
+!Edge_Detection_Subsystem.qsys
+!VGA_Subsystem.qsys
+!Video_In_Edge_Detection_Subsystem.qsys
+!Video_In_Subsystem.qsys
+
+# Allow the content of the Computer_System folder
+!Computer_System/**/*
+
