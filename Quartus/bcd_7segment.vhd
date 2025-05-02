@@ -7,7 +7,7 @@ ENTITY bcd_7segment IS
         seven_segment_out : OUT STD_LOGIC_VECTOR (6 DOWNTO 0));
 END bcd_7segment;
 
-ARCHITECTURE Behavioral OF bcd_7segment IS
+ARCHITECTURE logic OF bcd_7segment IS
 BEGIN
     PROCESS (bcd_in)
         VARIABLE A : STD_LOGIC := bcd_in(3);
@@ -22,4 +22,5 @@ BEGIN
         seven_segment_out(4) <= NOT ((NOT A AND C AND NOT D) OR (NOT B AND NOT C AND NOT D));
         seven_segment_out(5) <= NOT ((NOT A AND B AND NOT C) OR (NOT A AND B AND NOT D) OR (A AND NOT B AND NOT C) OR (NOT A AND NOT C AND NOT D));
         seven_segment_out(6) <= NOT ((NOT A AND NOT B AND C) OR (NOT A AND B AND NOT C) OR (NOT A AND C AND NOT D));
-END PROCESS;
+    END PROCESS;
+END logic;
