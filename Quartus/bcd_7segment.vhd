@@ -15,12 +15,12 @@ BEGIN
         VARIABLE C : STD_LOGIC := bcd_in(1);
         VARIABLE D : STD_LOGIC := bcd_in(0);
     BEGIN
-        seven_segment_out(0) <= NOT ((NOT A AND C) OR (NOT A AND B AND D) OR (A AND NOT B AND NOT C) OR (NOT A AND NOT B AND NOT D));
-        seven_segment_out(1) <= NOT ((NOT A AND NOT B) OR (NOT A AND NOT C AND NOT D) OR (NOT A AND C AND D) OR (NOT B AND NOT C));
-        seven_segment_out(2) <= NOT ((NOT A AND D) OR (NOT A AND B) OR (NOT B AND NOT C));
-        seven_segment_out(3) <= NOT ((NOT A AND NOT B AND C) OR (NOT A AND B AND NOT C AND D) OR (NOT A AND C AND NOT D) OR (A AND NOT B AND NOT C) OR (NOT A AND NOT B AND NOT D));
-        seven_segment_out(4) <= NOT ((NOT A AND C AND NOT D) OR (NOT B AND NOT C AND NOT D));
+        seven_segment_out(6) <= NOT ((NOT A AND NOT B AND C) OR (NOT A AND B AND NOT C) OR (A AND NOT B AND NOT C) OR (NOT A AND C AND NOT D));
         seven_segment_out(5) <= NOT ((NOT A AND B AND NOT C) OR (NOT A AND B AND NOT D) OR (A AND NOT B AND NOT C) OR (NOT A AND NOT C AND NOT D));
-        seven_segment_out(6) <= NOT ((NOT A AND NOT B AND C) OR (NOT A AND B AND NOT C) OR (NOT A AND C AND NOT D));
+        seven_segment_out(4) <= NOT ((NOT A AND C AND NOT D) OR (NOT B AND NOT C AND NOT D));
+        seven_segment_out(3) <= NOT ((NOT A AND NOT B AND C) OR (NOT A AND B AND NOT C AND D) OR (NOT A AND C AND NOT D) OR (A AND NOT B AND NOT C) OR (NOT A AND NOT B AND NOT D));
+        seven_segment_out(2) <= NOT ((NOT A AND D) OR (NOT A AND B) OR (NOT B AND NOT C));
+        seven_segment_out(1) <= NOT ((NOT A AND NOT B) OR (NOT A AND NOT C AND NOT D) OR (NOT A AND C AND D) OR (NOT B AND NOT C));
+        seven_segment_out(0) <= NOT ((NOT A AND C) OR (NOT A AND B AND D) OR (A AND NOT B AND NOT C) OR (NOT A AND NOT B AND NOT D));
     END PROCESS;
 END logic;
