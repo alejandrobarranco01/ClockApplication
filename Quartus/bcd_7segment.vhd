@@ -22,5 +22,4 @@ BEGIN
         seven_segment_out(4) <= NOT ((NOT A AND C AND NOT D) OR (NOT B AND NOT C AND NOT D));
         seven_segment_out(5) <= NOT ((NOT A AND B AND NOT C) OR (NOT A AND B AND NOT D) OR (A AND NOT B AND NOT C) OR (NOT A AND NOT C AND NOT D));
         seven_segment_out(6) <= NOT ((NOT A AND NOT B AND C) OR (NOT A AND B AND NOT C) OR (NOT A AND C AND NOT D));
-    END IF;
 END PROCESS;
