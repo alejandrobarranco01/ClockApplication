@@ -18,6 +18,8 @@
 
 #include "hardware.h"
 
+typedef enum {VIEW_MODE, MODIFY_MODE} AppState;
+
 int changeTimeMode(Time *time);
 
 #endif /* APP_H_ */

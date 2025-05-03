@@ -35,17 +35,19 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	// Main display time loop
+	AppState current_state = VIEW_MODE;
 	while (1) {
-		// -2 is a flag to signify that we are in display time mode
-		// so that the flash digit function isn't triggered
-		int button = readButtons(savedTime, -2); // Wait for button pressed
-
-		// If KEY0 is pressed then enter change time mode
-		if (button == 4)
-			changeTimeMode(savedTime);  // Enter change time mode
-		else
-			continue; // Otherwise keep waiting for input
+		if (current_state == VIEW_MODE) {
+			// -2 is a flag to signify that we are in display time mode
+			// so that the flash digit function isn't triggered
+			int button = readButtons(savedTime, -2); // Wait for button pressed
+			// If KEY0 is pressed then enter change time mode
+			if (button == 4)
+				current_state = MODIFY_MODE;		// Enter change time mode
+		} else if (current_state == MODIFY_MODE) {
+			changeTimeMode(savedTime);  // Enters modify mode
+			current_state = VIEW_MODE;  // Auto-return to view after exit
+		}
 	}
 
 	pthread_join(handleTimeAndSwitchesThread, NULL);
