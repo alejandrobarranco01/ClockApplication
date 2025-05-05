@@ -25,18 +25,20 @@ The application simulates a simple clock using military time format, displayed o
 
 ![Digital Clock Interface](img/clock_control.png)
 
-### Features
+## Features
 
-- Displays the time in 24-hour military format.
+- Displays the time in 24-hour military format
 - Uses buttons on the DE10-Standard board for user input:
-  - **KEY0**: Toggle between "Display Time" and "Change Time" mode.
-  - **KEY1**: Move on to the next digit in time change mode.
-  - **KEY2**: Increment the current digit in time change mode.
-  - **KEY3**: Decrement the current digit in time change mode.
-- **SW9** turns the clock on and off.
-- **SW0** resets the seconds while in time change mode.
-- Flashes the current digit being modified for user clarity.
-- The clock reads and saves the current time to a text file for persistence between sessions.
+  - **SW9**:
+    - 0 = System OFF
+    - 1 = System ON
+  - **SW0** (when SW9 = 1):
+    - 0 = VIEW mode (normal display)
+    - 1 = MODIFY mode (time adjustment)
+  - **KEY0**: Cycle through editable digits in MODIFY mode
+  - **KEY1**: Increment current digit in MODIFY mode
+  - **KEY2**: Decrement current digit in MODIFY mode
+  - **KEY3**: Reset seconds to 00 in MODIFY mode
 
 ## System Design Overview
 
@@ -44,11 +46,12 @@ The application simulates a simple clock using military time format, displayed o
 
 ## Code Structure
 
-- [`app.c`](app.c): Main application logic handling the display and user interaction.
-- [`hardware.c`](hardware.c): Interface with the hardware components, including reading inputs and controlling the displays.
-- [`hardware.h`](hardware.h) and [`app.h`](app.h): Header files for function declarations and structure definitions.
-- [`DE10_Standard_Computer.v`](Quartus/DE10_Standard_Computer.v): FPGA configuration file defining the hardware connections and logic.
-- [`bcd_7segment.vhd`](Quartus/bcd_7segment.vhd): VHDL file defining the BCD to seven-segment display decoder.
+## Code Structure
+
+- [app.c](app.c): Main application logic
+- [hardware.c](hardware.c): Hardware interface layer
+- [Quartus/bcd_7segment.vhd](Quartus/bcd_7segment.vhd): Custom BCD to 7-segment decoder
+- [Quartus/DE10_Standard_Computer.v](Quartus/DE10_Standard_Computer.v): Top-level FPGA design
 
 ## Building the Project
 
