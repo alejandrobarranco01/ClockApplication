@@ -4,7 +4,6 @@
  *
  * @author Alejandro Barranco-Leyte
  */
-
 #ifndef APP_H_
 #define APP_H_
 
@@ -16,10 +15,16 @@
 #include <unistd.h>
 #include <pthread.h>
 
+typedef enum {
+	OFF, VIEW_MODE, MODIFY_MODE
+} AppState;
+
 #include "hardware.h"
 
-typedef enum {VIEW_MODE, MODIFY_MODE} AppState;
+extern volatile AppState current_state;
 
-int changeTimeMode(Time *time);
+void viewMode();
+void modifyMode();
+void* stateCheckThread(void *arg);
 
 #endif /* APP_H_ */
