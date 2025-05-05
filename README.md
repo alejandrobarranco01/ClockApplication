@@ -46,8 +46,6 @@ The application simulates a simple clock using military time format, displayed o
 
 ## Code Structure
 
-## Code Structure
-
 - [app.c](app.c): Main application logic
 - [hardware.c](hardware.c): Hardware interface layer
 - [Quartus/bcd_7segment.vhd](Quartus/bcd_7segment.vhd): Custom BCD to 7-segment decoder
